@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Sarcófago no navegador</title>
+<meta name="theme-color" content="#161a2c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;1,400&family=Creepster&display=swap" rel="stylesheet">
+<style>
+  :root { --noite: #161a2c; --osso: #e6decb; --pergaminho: #a39c8d; --sangue: #c3262c; --cera: #8c1c22; --chama: #eba43c; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; }
+  body { color: var(--osso); font: 400 1.1rem/1.5 "Alegreya", Georgia, serif; }
+  #jogo { position: fixed; inset: 0; width: 100%; height: 100%; display: block; background: #000; }
+  .carregando {
+    position: fixed; inset: 0; display: grid; place-items: center; text-align: center;
+    background: radial-gradient(ellipse at 50% 35%, #232846 0%, var(--noite) 55%, #0b0d17 100%);
+    padding: 1.5rem;
+  }
+  .carregando[hidden] { display: none; }
+  .marca { font: 400 clamp(3rem, 12vw, 6rem)/0.9 "Creepster", cursive; color: var(--sangue); margin: 0 0 1.5rem; }
+  .barra { width: min(26rem, 80vw); height: 6px; margin: 0 auto; background: #262b45; border-radius: 3px; overflow: hidden; }
+  .barra span { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--cera), var(--sangue)); transition: width .3s ease; }
+  .estado { margin: 0.9rem 0 0; color: var(--osso); }
+  .dica { margin: 1.6rem auto 0; max-width: 32ch; font-style: italic; color: var(--pergaminho); }
+  .erro { color: #f0b9a8; max-width: 36ch; margin: 1rem auto 0; }
+  .voltar { color: var(--osso); text-decoration-color: var(--cera); }
+  .tela-cheia {
+    position: fixed; right: 0.75rem; bottom: 0.75rem; z-index: 2;
+    font: 700 0.95rem "Alegreya", serif; color: var(--osso);
+    background: rgba(22,26,44,.75); border: 1px solid #3a3f58; border-radius: 6px; padding: 0.35rem 0.7rem; cursor: pointer;
+  }
+  .tela-cheia[hidden] { display: none; }
+  :focus-visible { outline: 2px solid var(--chama); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<canvas id="jogo" tabindex="-1"></canvas>
+<div class="carregando" data-carregando>
+  <div>
+    <p class="marca">Sarcófago</p>
+    <div class="barra" role="progressbar" aria-label="Carregando o jogo" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span data-barra></span></div>
+    <p class="estado" data-estado>Preparando…</p>
+    <p class="dica" data-dica>Na primeira vez o jogo baixa tudo de uma vez. Nas próximas, o navegador já tem os arquivos e abre bem mais rápido.</p>
+    <p data-voltar hidden><a class="voltar" href="../">Voltar para a página do jogo</a></p>
+  </div>
+</div>
+<button class="tela-cheia" type="button" data-tela-cheia hidden>Tela cheia</button>
+
+<script>
+(async function () {
+  var barra = document.querySelector("[data-barra]");
+  var papel = document.querySelector('[role="progressbar"]');
+  var estado = document.querySelector("[data-estado]");
+  var carregando = document.querySelector("[data-carregando]");
+  function mostrar(fracao, texto) {
+    var p = Math.round(fracao * 100);
+    barra.style.width = p + "%";
+    papel.setAttribute("aria-valuenow", p);
+    if (texto) estado.textContent = texto;
+  }
+  function falhar(texto) {
+    estado.innerHTML = "";
+    var erro = document.createElement("p");
+    erro.className = "erro";
+    erro.textContent = texto;
+    estado.after(erro);
+    document.querySelector("[data-voltar]").hidden = false;
+  }
+  function mb(bytes) { return Math.round(bytes / 1048576); }
+
+  var manifesto;
+  try {
+    manifesto = await (await fetch("Build/manifesto.json", { cache: "no-cache" })).json();
+  } catch (e) {
+    falhar("Não foi possível abrir o jogo. Confira a internet e recarregue a página.");
+    return;
+  }
+
+  // Os dados vêm em partes (o GitHub Pages recusa arquivo de mais de 100 MB). Juntos, ficam guardados no navegador
+  // por versão: na segunda visita o jogo abre sem baixar de novo.
+  async function dados() {
+    var chave = new Request("dados-" + manifesto.versao);
+    var cache = null;
+    try { cache = await caches.open("sarcofago"); } catch (e) {}
+    if (cache) {
+      var guardado = await cache.match(chave);
+      if (guardado) return URL.createObjectURL(await guardado.blob());
+    }
+    var total = manifesto.tamanho, recebido = 0, pedacos = [];
+    for (var i = 0; i < manifesto.dados.length; i++) {
+      var resposta = await fetch("Build/" + manifesto.dados[i]);
+      if (!resposta.ok) throw new Error("parte " + manifesto.dados[i] + ": " + resposta.status);
+      var leitor = resposta.body.getReader();
+      for (;;) {
+        var lido = await leitor.read();
+        if (lido.done) break;
+        pedacos.push(lido.value);
+        recebido += lido.value.length;
+        mostrar(0.85 * recebido / total, "Baixando " + mb(recebido) + " de " + mb(total) + " MB");
+      }
+    }
+    var blob = new Blob(pedacos);
+    pedacos = null;
+    if (cache) {
+      try {
+        for (var velha of await cache.keys()) await cache.delete(velha);
+        await cache.put(chave, new Response(blob));
+      } catch (e) { /* sem espaço: abre mesmo assim, só não guarda */ }
+    }
+    return URL.createObjectURL(blob);
+  }
+
+  var dataUrl;
+  try {
+    dataUrl = await dados();
+  } catch (e) {
+    falhar("O download parou no meio (" + e.message + "). Recarregue a página para tentar de novo.");
+    return;
+  }
+
+  var script = document.createElement("script");
+  script.src = "Build/" + manifesto.loader;
+  script.onload = function () {
+    mostrar(0.85, "Abrindo o jogo…");
+    createUnityInstance(document.querySelector("#jogo"), {
+      dataUrl: dataUrl,
+      frameworkUrl: "Build/" + manifesto.framework,
+      codeUrl: "Build/" + manifesto.wasm,
+      streamingAssetsUrl: "StreamingAssets",
+      companyName: "Joseph Santiago",
+      productName: "Sarcófago",
+      productVersion: manifesto.versao,
+      // A campanha salva fica no navegador (IndexedDB) e é gravada sozinha.
+      autoSyncPersistentDataPath: true,
+    }, function (p) { mostrar(0.85 + 0.15 * p); }).then(function () {
+      carregando.hidden = true;
+      var botao = document.querySelector("[data-tela-cheia]");
+      if (document.fullscreenEnabled) {
+        botao.hidden = false;
+        botao.onclick = function () { document.documentElement.requestFullscreen(); };
+        document.addEventListener("fullscreenchange", function () { botao.hidden = !!document.fullscreenElement; });
+      }
+      document.querySelector("#jogo").focus();
+    }).catch(function (e) {
+      falhar("O jogo não abriu neste navegador (" + e + "). Tente no Chrome ou no Edge de um computador, ou baixe o app para Android.");
+    });
+  };
+  script.onerror = function () { falhar("Não foi possível abrir o jogo. Recarregue a página."); };
+  document.body.appendChild(script);
+})();
+</script>
+</body>
+</html>
