@@ -4,6 +4,10 @@ Jogo de ação sombrio para Android. É 1348, a Peste Negra varre a Europa, e El
 
 ![Menu do Sarcófago](imagens/menu.jpg)
 
+## Jogar no navegador
+
+**[Abrir a página do jogo](https://josephsantiagos.github.io/sarcofago-download/)**: dá para jogar no navegador do computador, sem instalar nada, ou baixar para Android.
+
 ## Baixar
 
 **[Baixar a versão mais nova (Sarcofago.apk)](https://github.com/josephsantiagos/sarcofago-download/releases/latest/download/Sarcofago.apk)**

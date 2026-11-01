@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sarcófago</title>
+<meta name="description" content="Jogo de ação sombrio de vampiros na Peste Negra. Jogue no navegador ou baixe para Android.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sarcófago">
+<meta property="og:description" content="1348. A peste levou o corpo. A noite ficou com o resto. Jogue no navegador ou baixe para Android.">
+<meta property="og:image" content="https://josephsantiagos.github.io/sarcofago-download/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="theme-color" content="#161a2c">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,600;0,800;1,400&family=Creepster&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --noite: #161a2c;
+    --noite-funda: #0f1220;
+    --osso: #e6decb;
+    --pergaminho: #a39c8d;
+    --sangue: #c3262c;
+    --cera: #8c1c22;
+    --chama: #eba43c;
+    --texto: 1.1875rem;
+  }
+  * { box-sizing: border-box; }
+  html { background: var(--noite-funda); }
+  body {
+    margin: 0;
+    background: var(--noite);
+    color: var(--osso);
+    font: 400 var(--texto)/1.62 "Alegreya", Georgia, serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--osso); text-decoration-color: var(--cera); text-underline-offset: 0.2em; }
+  a:hover { color: var(--chama); }
+  :focus-visible { outline: 2px solid var(--chama); outline-offset: 4px; border-radius: 4px; }
+  kbd {
+    font: 600 0.85em "Alegreya", serif;
+    padding: 0.05em 0.45em;
+    border: 1px solid #3a3f58;
+    border-bottom-width: 3px;
+    border-radius: 5px;
+    background: #1d2136;
+    white-space: nowrap;
+  }
+
+  /* ---------- Abertura: o castelo ao luar ---------- */
+  .abertura {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: end;
+    padding: clamp(1.5rem, 5vw, 4.5rem);
+    padding-bottom: clamp(2.5rem, 8vh, 5rem);
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .abertura picture, .abertura img.fundo {
+    position: absolute; inset: 0; z-index: -2;
+    width: 100%; height: 100%; object-fit: cover; object-position: 70% 40%;
+  }
+  .abertura::after {
+    content: ""; position: absolute; inset: 0; z-index: -1;
+    background:
+      linear-gradient(90deg, rgba(15,18,32,.92) 0%, rgba(15,18,32,.55) 45%, rgba(15,18,32,0) 75%),
+      linear-gradient(0deg, var(--noite) 0%, rgba(22,26,44,0) 35%);
+  }
+  .abertura-texto { max-width: 38rem; }
+  .marca {
+    margin: 0;
+    font: 400 clamp(4rem, 15vw, 10.5rem)/0.85 "Creepster", cursive;
+    color: var(--sangue);
+    letter-spacing: 0.01em;
+    text-shadow: 0 0.06em 0.3em rgba(0,0,0,.55);
+  }
+  .sina {
+    margin: 1.1rem 0 2.4rem;
+    font-style: italic;
+    font-size: clamp(1.15rem, 2.4vw, 1.5rem);
+    color: var(--osso);
+    max-width: 30ch;
+  }
+  .acoes { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem 2.25rem; }
+
+  /* O selo de lacre: o botão principal. */
+  .selo {
+    display: inline-flex; align-items: center; gap: 1rem;
+    text-decoration: none; color: var(--osso);
+  }
+  .selo-cera {
+    flex: none;
+    width: 6.25rem; height: 6.25rem;
+    display: grid; place-items: center;
+    background:
+      radial-gradient(circle at 35% 30%, #b5323a 0%, var(--cera) 45%, #5e1015 100%);
+    clip-path: polygon(50% 0%, 61% 4%, 71% 2%, 79% 9%, 89% 12%, 92% 22%, 99% 30%, 97% 41%, 100% 51%, 96% 61%, 99% 71%, 91% 79%, 88% 89%, 78% 92%, 70% 99%, 60% 96%, 50% 100%, 40% 96%, 30% 99%, 22% 92%, 12% 89%, 9% 79%, 1% 71%, 4% 61%, 0% 51%, 3% 41%, 1% 30%, 8% 22%, 11% 12%, 21% 9%, 29% 2%, 39% 4%);
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,.5));
+    transition: transform .25s ease;
+  }
+  .selo-cera span {
+    width: 72%; height: 72%;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,.45), inset 0 -2px 3px rgba(255,140,140,.18), 0 1px 0 rgba(255,150,150,.15);
+    font: 400 2.6rem/1 "Creepster", cursive;
+    color: #6a1218;
+    text-shadow: 0 1px 0 rgba(255,140,140,.35), 0 -1px 0 rgba(0,0,0,.4);
+  }
+  .selo:hover .selo-cera { transform: rotate(-6deg) scale(1.04); }
+  .selo-rotulo { display: grid; line-height: 1.2; }
+  .selo-rotulo strong { font-size: 1.45rem; font-weight: 800; }
+  .selo-rotulo small { font-size: 1rem; color: var(--pergaminho); }
+  .secundaria { display: grid; line-height: 1.25; font-size: 1.1rem; }
+  .secundaria a { font-weight: 600; }
+  .secundaria small { color: var(--pergaminho); font-size: 0.95rem; }
+  .aviso-celular {
+    margin: 1.6rem 0 0; max-width: 36ch;
+    font-size: 1rem; color: var(--pergaminho);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .selo-cera { animation: carimbo .7s cubic-bezier(.2,.9,.3,1.2) .6s both; }
+    @keyframes carimbo {
+      from { transform: scale(1.35) rotate(14deg); opacity: 0; }
+      to { transform: none; opacity: 1; }
+    }
+  }
+
+  /* ---------- A crônica ---------- */
+  .cronica {
+    max-width: 34rem;
+    margin: clamp(3.5rem, 9vw, 7rem) auto;
+    padding: 0 1.25rem;
+  }
+  .cronica p { margin: 0 0 1.2em; }
+  .cronica p:first-child::first-letter {
+    float: left;
+    font: 400 4.6em/0.8 "Creepster", cursive;
+    color: var(--sangue);
+    margin: 0.06em 0.1em 0 0;
+  }
+  h2 {
+    font: 800 clamp(1.9rem, 4.5vw, 2.8rem)/1.1 "Alegreya", serif;
+    margin: 0 0 0.6em;
+    color: var(--osso);
+  }
+
+  /* ---------- Fotos de ponta a ponta ---------- */
+  figure { margin: 0; }
+  .janela img { width: 100%; max-height: 82vh; object-fit: cover; }
+  .janela figcaption, .regioes figcaption {
+    font-style: italic; color: var(--pergaminho); font-size: 1rem;
+    padding: 0.7rem clamp(1.25rem, 5vw, 4.5rem) 0;
+  }
+
+  /* ---------- Os clãs: nichos de cripta ---------- */
+  .clas { max-width: 72rem; margin: clamp(4rem, 10vw, 8rem) auto; padding: 0 1.25rem; }
+  .clas > p { max-width: 36rem; margin: 0 0 2.5rem; color: var(--pergaminho); }
+  .nichos { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; }
+  .nicho img {
+    width: 100%; aspect-ratio: 3 / 5; object-fit: cover; object-position: 50% 20%;
+    border-radius: 50% 50% 6px 6px / 22% 22% 6px 6px;
+    border: 1px solid #2c3150;
+    background: #0d0f1a;
+  }
+  .nicho h3 { font: 800 1.45rem/1.15 "Alegreya", serif; margin: 1rem 0 0.15rem; }
+  .nicho .cla { margin: 0 0 0.5rem; font-style: italic; }
+  .nicho p { margin: 0; font-size: 1.05rem; color: var(--pergaminho); line-height: 1.5; }
+  .terra .cla { color: #d08a2e; }
+  .ar .cla { color: #bfd8f0; }
+  .fogo .cla { color: #e9603f; }
+  .agua .cla { color: #4fb7d3; }
+
+  /* ---------- As regiões ---------- */
+  .regioes { max-width: 80rem; margin: clamp(4rem, 10vw, 8rem) auto; padding: 0 1.25rem; }
+  .regioes > p { max-width: 36rem; margin: 0 0 2rem; color: var(--pergaminho); }
+  .mosaico { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto; gap: 1rem; }
+  .mosaico figure:first-child { grid-row: span 3; display: flex; flex-direction: column; }
+  .mosaico figure:first-child img { flex: 1; min-height: 0; object-fit: cover; }
+  .mosaico img { width: 100%; border-radius: 4px; }
+  .mosaico figcaption { padding: 0.45rem 0 0; }
+
+  /* ---------- Como jogar ---------- */
+  .jogar { max-width: 64rem; margin: clamp(4rem, 10vw, 8rem) auto; padding: 0 1.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 0 3rem; }
+  .jogar > h2 { grid-column: 1 / -1; }
+  .jogar h3 { font: 800 1.5rem/1.2 "Alegreya", serif; margin: 0 0 1rem; }
+  .teclas { width: 100%; border-collapse: collapse; font-size: 1.05rem; }
+  .teclas td { padding: 0.45rem 0; border-bottom: 1px solid #262b45; vertical-align: top; }
+  .teclas td:first-child { width: 46%; padding-right: 1rem; }
+  .passos { margin: 0; padding-left: 1.3rem; }
+  .passos li { margin-bottom: 0.7rem; padding-left: 0.3rem; }
+  .passos li::marker { color: var(--sangue); font-weight: 800; }
+  .jogar .nota { font-size: 1rem; color: var(--pergaminho); margin-top: 1.25rem; }
+
+  /* ---------- Fim ---------- */
+  .fim {
+    text-align: center;
+    padding: clamp(4rem, 10vw, 7rem) 1.25rem 3rem;
+    background: linear-gradient(180deg, var(--noite) 0%, var(--noite-funda) 100%);
+  }
+  .fim .marca { font-size: clamp(3rem, 10vw, 5.5rem); }
+  .fim .acoes { justify-content: center; margin: 2rem 0 3.5rem; }
+  .creditos { max-width: 40rem; margin: 0 auto; font-size: 0.95rem; color: var(--pergaminho); }
+  .creditos p { margin: 0 0 0.6rem; }
+
+  @media (max-width: 860px) {
+    .nichos { grid-template-columns: repeat(2, 1fr); }
+    .jogar { grid-template-columns: 1fr; gap: 2.5rem; }
+    .jogar > h2 { margin-bottom: -1rem; }
+    .mosaico { grid-template-columns: 1fr; }
+    .mosaico figure:first-child { grid-row: auto; display: block; }
+  }
+  @media (max-width: 480px) {
+    :root { --texto: 1.1rem; }
+    .abertura::after {
+      background: linear-gradient(0deg, var(--noite) 8%, rgba(15,18,32,.75) 55%, rgba(15,18,32,.2) 100%);
+    }
+    .selo-cera { width: 5.25rem; height: 5.25rem; }
+    .nichos { gap: 1rem; }
+    .nicho h3 { font-size: 1.25rem; }
+  }
+</style>
+</head>
+<body>
+
+<header class="abertura">
+  <picture>
+    <source media="(max-width: 800px)" srcset="img/menu-800.webp">
+    <img class="fundo" src="img/menu-1600.webp" alt="" fetchpriority="high">
+  </picture>
+  <div class="abertura-texto">
+    <h1 class="marca">Sarcófago</h1>
+    <p class="sina">1348. A peste levou o corpo. A noite ficou com o resto.</p>
+    <div class="acoes" data-acoes>
+      <a class="selo" href="jogar/" data-jogar>
+        <span class="selo-cera" aria-hidden="true"><span>S</span></span>
+        <span class="selo-rotulo"><strong>Jogar no navegador</strong><small>No computador, sem instalar nada</small></span>
+      </a>
+      <span class="secundaria" data-baixar>
+        <a href="https://github.com/josephsantiagos/sarcofago-download/releases/latest/download/Sarcofago.apk">Baixar para Android</a>
+        <small>Arquivo APK de 460 MB</small>
+      </span>
+    </div>
+    <p class="aviso-celular" data-aviso hidden></p>
+  </div>
+</header>
+
+<main>
+  <section class="cronica" aria-label="A história">
+    <p>Elias era um homem comum de Vésper, ao pé dos Cárpatos. Morreu numa vala do Mosteiro de São Lázaro, com as marcas negras da peste no pescoço. No último suspiro, Kazimir, o vampiro mais medonho que já existiu, o mordeu e o deitou num velho sarcófago de madeira.</p>
+    <p>Três noites depois, Elias desperta com terra na boca, uma sede terrível e um elemento novo ardendo no sangue. Lá fora, os mortos da vala comum estão se levantando. E a peste tem um senhor: o Conde Drácula, que espalha a doença com os seus ratos para erguer um exército com os mortos.</p>
+  </section>
+
+  <figure class="janela">
+    <picture>
+      <source media="(max-width: 800px)" srcset="img/rubia-800.webp">
+      <img src="img/rubia-1600.webp" alt="O vampiro com fogo nas mãos diante das casas acesas de uma aldeia, à noite" loading="lazy">
+    </picture>
+    <figcaption>A aldeia da Cepa, no Castelo Rúbia, à noite. O Mago leva o fogo nas mãos.</figcaption>
+  </figure>
+
+  <section class="clas" aria-labelledby="titulo-clas">
+    <h2 id="titulo-clas">Escolha o seu clã</h2>
+    <p>Antes da peste, Elias foi soldado, caçador, alquimista ou ladrão. Cada clã domina um elemento, e as armas encantadas queimam, eletrocutam, afogam ou soterram quem apanha.</p>
+    <ul class="nichos">
+      <li class="nicho terra">
+        <img src="img/cla-guerreiro.webp" alt="O Guerreiro" loading="lazy" width="480" height="800">
+        <h3>Guerreiro</h3>
+        <p class="cla">Clã da Pedra, terra</p>
+        <p>Corpo a corpo e aguenta pancada. A areia corre pelas mãos e cada golpe abala o inimigo.</p>
+      </li>
+      <li class="nicho ar">
+        <img src="img/cla-arqueiro.webp" alt="O Arqueiro" loading="lazy" width="480" height="800">
+        <h3>Arqueiro</h3>
+        <p class="cla">Clã da Revoada, ar</p>
+        <p>Ataca de longe e não para no lugar. Pequenos raios estalam em volta do corpo.</p>
+      </li>
+      <li class="nicho fogo">
+        <img src="img/cla-mago.webp" alt="O Mago" loading="lazy" width="480" height="800">
+        <h3>Mago</h3>
+        <p class="cla">Clã da Brasa, fogo</p>
+        <p>Dano alto em área e pouca defesa. As mãos ardem, e quem apanha continua queimando.</p>
+      </li>
+      <li class="nicho agua">
+        <img src="img/cla-assassino.webp" alt="O Assassino" loading="lazy" width="480" height="800">
+        <h3>Assassino</h3>
+        <p class="cla">Clã da Maré, água</p>
+        <p>Mata um alvo de cada vez, rápido e escondido. A água envolve as mãos e gela o inimigo.</p>
+      </li>
+    </ul>
+  </section>
+
+  <figure class="janela">
+    <picture>
+      <source media="(max-width: 800px)" srcset="img/floresta-800.webp">
+      <img src="img/floresta-1600.webp" alt="O Guerreiro gira a espada em chamas contra lobos brancos numa vila da floresta" loading="lazy">
+    </picture>
+    <figcaption>Na Floresta Uivante, o Montante da Guarda Rubra contra a matilha do Alfa Branco.</figcaption>
+  </figure>
+
+  <section class="regioes" aria-labelledby="titulo-regioes">
+    <h2 id="titulo-regioes">Dez regiões até o Drácula</h2>
+    <p>Do mosteiro onde Elias desperta até o castelo nos Cárpatos: pântanos, florestas, cidades tomadas pela peste, palácios de velas e a cidadela do inverno eterno. Cada região tem o seu chefão vampiro.</p>
+    <div class="mosaico">
+      <figure>
+        <img src="img/burgo-1600.webp" srcset="img/burgo-800.webp 800w, img/burgo-1600.webp 1600w" sizes="(max-width: 860px) 100vw, 66vw" alt="Uma rua estreita de casas altas com janelas acesas e lampiões, à noite" loading="lazy">
+        <figcaption>O Burgo da Peste, a rua das cruzes</figcaption>
+      </figure>
+      <figure>
+        <img src="img/pantano-800.webp" alt="Casas de pedra sobre palafitas e passarelas de madeira sobre a água" loading="lazy">
+        <figcaption>O Pântano de Vael</figcaption>
+      </figure>
+      <figure>
+        <img src="img/cidadela-800.webp" alt="Um dragão negro pousado na neve diante de uma casa" loading="lazy">
+        <figcaption>Um dragão na Cidadela do Inverno Eterno</figcaption>
+      </figure>
+      <figure>
+        <img src="img/arqueiro-800.webp" alt="O Arqueiro de arco na mão numa vila de pescadores, à noite" loading="lazy">
+        <figcaption>A Torre das Tempestades</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="jogar" aria-labelledby="titulo-jogar">
+    <h2 id="titulo-jogar">Como jogar</h2>
+    <div>
+      <h3>No computador</h3>
+      <table class="teclas">
+        <tbody>
+          <tr><td><kbd>W</kbd> <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd></td><td>Andar</td></tr>
+          <tr><td><kbd>J</kbd> ou <kbd>Espaço</kbd></td><td>Atacar, falar e morder</td></tr>
+          <tr><td><kbd>Shift</kbd> ou <kbd>K</kbd></td><td>Esquivar rolando</td></tr>
+          <tr><td><kbd>1</kbd> a <kbd>4</kbd></td><td>Poderes</td></tr>
+          <tr><td><kbd>Q</kbd></td><td>Beber o frasco de sangue</td></tr>
+          <tr><td><kbd>I</kbd> ou <kbd>Tab</kbd></td><td>Bolsa e equipamento</td></tr>
+          <tr><td><kbd>P</kbd></td><td>Árvore de Sangue</td></tr>
+          <tr><td><kbd>M</kbd></td><td>Mapa</td></tr>
+        </tbody>
+      </table>
+      <p class="nota">Também dá para clicar nos botões da tela com o mouse. Na primeira vez o jogo demora para carregar; depois o navegador guarda os arquivos e abre mais rápido.</p>
+    </div>
+    <div>
+      <h3>No Android</h3>
+      <ol class="passos">
+        <li>Abra esta página no celular e toque em <a href="https://github.com/josephsantiagos/sarcofago-download/releases/latest/download/Sarcofago.apk">Baixar para Android</a>.</li>
+        <li>Toque no arquivo baixado. O Android pede para permitir "instalar apps desconhecidos" pelo navegador; permita.</li>
+        <li>Se o Play Protect avisar que o app é desconhecido, toque em "Instalar mesmo assim". É uma versão de teste, fora da Play Store.</li>
+        <li>Para atualizar, baixe a versão nova e instale por cima. A campanha continua de onde parou.</li>
+      </ol>
+      <p class="nota">Precisa de Android 8 ou mais novo, de 64 bits; recomendado 4 GB de RAM. Se o celular esquentar, em Configurações escolha gráficos Baixo e 30 quadros por segundo.</p>
+    </div>
+  </section>
+</main>
+
+<footer class="fim">
+  <p class="marca" aria-hidden="true">Sarcófago</p>
+  <div class="acoes">
+    <a class="selo" href="jogar/">
+      <span class="selo-cera" aria-hidden="true"><span>S</span></span>
+      <span class="selo-rotulo"><strong>Jogar no navegador</strong></span>
+    </a>
+    <span class="secundaria">
+      <a href="https://github.com/josephsantiagos/sarcofago-download/releases/latest/download/Sarcofago.apk">Baixar para Android</a>
+      <small><a href="https://github.com/josephsantiagos/sarcofago-download/releases">Versões anteriores e o que mudou</a></small>
+    </span>
+  </div>
+  <div class="creditos">
+    <p>Modelos e animações de <a href="https://quaternius.com">Quaternius</a> e texturas de <a href="https://polyhaven.com">Poly Haven</a> (CC0). Ícones de <a href="https://game-icons.net">game-icons.net</a> (CC BY 3.0). Fonte do título: Creepster, de Font Diner.</p>
+    <p>Versão de teste <span data-versao>0.3.4</span>.</p>
+  </div>
+</footer>
+
+<script>
+  // No celular, o botão principal vira o download do app: o jogo no navegador é pesado demais para a maioria dos celulares.
+  (function () {
+    var ua = navigator.userAgent;
+    var android = /Android/i.test(ua);
+    var ios = /iPhone|iPad|iPod/i.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    var aviso = document.querySelector("[data-aviso]");
+    if (android) {
+      var acoes = document.querySelector("[data-acoes]");
+      var selo = acoes.querySelector("[data-jogar]");
+      var baixar = acoes.querySelector("[data-baixar]");
+      selo.href = baixar.querySelector("a").href;
+      selo.querySelector("strong").textContent = "Baixar para Android";
+      selo.querySelector("small").textContent = "Arquivo APK de 460 MB";
+      baixar.innerHTML = '<a href="jogar/">Jogar no navegador</a><small>Pesado: melhor no computador</small>';
+    } else if (ios) {
+      aviso.textContent = "Ainda não há versão para iPhone. O jogo no navegador é pesado e pode não abrir no celular: jogue no computador.";
+      aviso.hidden = false;
+    }
+  })();
+</script>
+</body>
+</html>
